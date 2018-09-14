@@ -1,9 +1,9 @@
 # 目录
-> * [TUP概述] (#main-chapter-1)
-> * [Tars语言] (#main-chapter-2)
-> * [Tars协议] (#main-chapter-3)
-> * [TUP使用] (#main-chapter-4)
-> * [TUP各版本接口介绍] (#main-chapter-5)
+> * [TUP概述](#main-chapter-1)
+> * [Tars语言](#main-chapter-2)
+> * [Tars协议](#main-chapter-3)
+> * [TUP使用](#main-chapter-4)
+> * [TUP各版本接口介绍](#main-chapter-5)
 
 # 1. TUP概述 <a id="main-chapter-1"></a>
 
