@@ -89,10 +89,10 @@ void  testStruct()
 		st->d		= 123.66f;
 
 		/* string 类型的成员赋值 */
-		JString_assign(st->s, "teststring", sizeof("teststring"));
+		JString_assign(st->s, "teststring", strlen("teststring"));
 
 		/* vector<byte> 类型的成员赋值 */
-		JString_assign(st->vb, "testvectrbyte", sizeof("testvectrbyte"));
+		JString_assign(st->vb, "testvectrbyte", strlen("testvectrbyte"));
 
 		/* vector<int> 类型的成员赋值,请使用流模式赋值 */
 		int i = 0;
@@ -135,6 +135,9 @@ void  testStruct()
 
 		printf("\nTest_TestInfo get struct: ret = %d, st->className=%s, st->ibegin=%d, st->ii=%d, st->iend=%d, st->d=%f,\n",
 		       ret, st->className, st->ibegin, st->ii, st->iend, st->d);
+		
+		printf("Test_TestInfo get struct: ret = %d, st->s=%s, st->vb=%s\n",
+                       ret, JString_data(st->s), JString_data(st->vb));
 
 		printf("Test_TestInfo get struct: ret = %d, st->aa->className=%s,st->aa->a=%d\n",
 		       ret, st->aa->className, st->aa->a);
