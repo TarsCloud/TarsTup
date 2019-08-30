@@ -20,14 +20,14 @@
 
 #include "Tars_c.h"
 
-//·µ»ØÖµ¶¨Òå
-const Int32 TARS_SUCCESS        =  0;	  //³É¹¦
-const Int32 TARS_ATTR_NOT_FOUND = -1;	  //²éÕÒ²»µ½Ïà¹ØÊôĞÔ
-const Int32 TARS_ENCODE_ERROR   = -2;	  //±àÂë´íÎó
-const Int32 TARS_DECODE_ERROR   = -3;	  //½âÂë´íÎó
-const Int32 TARS_RUNTIME_ERROR  = -4;	  //ÆäËûÔËĞĞÊ±´íÎó
-const Int32 TARS_MALLOC_ERROR   = -5;	  //ÄÚ´æÉêÇëÊ§°Ü´íÎó
-const Int32 TARS_DECODE_EOPNEXT = -6;	  //¿ÉÑ¡×Ö¶Î²»´æÔÚ
+//è¿”å›å€¼å®šä¹‰
+const Int32 TARS_SUCCESS        =  0;	  //æˆåŠŸ
+const Int32 TARS_ATTR_NOT_FOUND = -1;	  //æŸ¥æ‰¾ä¸åˆ°ç›¸å…³å±æ€§
+const Int32 TARS_ENCODE_ERROR   = -2;	  //ç¼–ç é”™è¯¯
+const Int32 TARS_DECODE_ERROR   = -3;	  //è§£ç é”™è¯¯
+const Int32 TARS_RUNTIME_ERROR  = -4;	  //å…¶ä»–è¿è¡Œæ—¶é”™è¯¯
+const Int32 TARS_MALLOC_ERROR   = -5;	  //å†…å­˜ç”³è¯·å¤±è´¥é”™è¯¯
+const Int32 TARS_DECODE_EOPNEXT = -6;	  //å¯é€‰å­—æ®µä¸å­˜åœ¨
 
 Int64 tars__bswap_constant_64(Int64 x)
 {
@@ -81,6 +81,24 @@ void JString_copy(char * dest, const char * src, uint32_t len)
 		return;
 	for (; dest != pe; ++dest, ++src)
 		*dest = *src;
+	
+	if (dest < src)
+        {
+                for (; dest != pe; ++dest, ++src)
+                        *dest = *src;
+        }
+        else if (dest > src)  //fix bug: dest and src overlapping
+        {
+            printf("len[%d]\n", len);
+            char* pe = (char*)dest + len - 1;
+            const char* ps = (const char*)src + len - 1;
+
+           while(len-- > 0)
+           {
+              *pe-- = *ps--;
+           }
+
+        }
 }
 
 Int32 JString_copyChar(JString * s, char * data, uint32_t len)
@@ -750,7 +768,7 @@ Int32 TarsInputStream_skipToTag(TarsInputStream * is, uint8_t tag)
 Int32 TarsInputStream_skipToStructEnd(TarsInputStream * is)
 {
 	Int32 ret;
-	Int32 level = 1; //ÅĞ¶Ï½á¹¹Ç¶Ì×µÄÉî¶È
+	Int32 level = 1; //åˆ¤æ–­ç»“æ„åµŒå¥—çš„æ·±åº¦
 	do
 	{
 		ret = DataHead_readFrom(is->_h, is);
@@ -1419,7 +1437,7 @@ Int32 TarsInputStream_readVector(TarsInputStream * is, JArray* v, uint8_t tag, B
 }
 
 
-/// ¶ÁÈ¡½á¹¹
+/// è¯»å–ç»“æ„
 Int32 TarsInputStream_readStruct(TarsInputStream * is, void * st, uint8_t tag, Bool isRequire)
 {
 	Int32 ret=0;
