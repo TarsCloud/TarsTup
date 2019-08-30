@@ -26,13 +26,13 @@ void testJString()
 	JString * src	= JString_new();
 	JString * dst	= JString_new();
 	printf("-----------------testJString------------------------------\n");
-	JString_assign(src, "abcd", sizeof("abcd"));
+	JString_assign(src, "abcd", strlen("abcd"));
 	printf("after assign \"abcd\":%s\n", JString_data(src));
 
 	JString_insert(src, 2, 'i');
 	printf("after insert \"i\": %s\n", JString_data(src));
 
-	JString_append(src, "ef", sizeof("ef"));
+	JString_append(src, "ef", strlen("ef"));
 	printf("after append \"ef\": %s\n", JString_data(src));
 
 	JString_resize(dst, JString_size(src));
@@ -48,16 +48,23 @@ void testJString()
 
 void testJArray()
 {
-	JArray * arr = JArray_new("testarray");
+        JArray * arr = JArray_new("testarray");
 
-	printf("-----------------testJArray------------------------------\n");
-	JArray_pushBackString(arr, "JArray_pushBackString1111");
-	printf("JArray_pushBackString: %s ,len=%d\n", JArray_getPtr(arr, 0), JArray_getLength(arr, 0));
+        printf("-----------------testJArray------------------------------\n");
+        JArray_pushBackString(arr, "JArray_pushBackString1111");
+        printf("JArray_pushBackString: %s ,len=%d,array_size[%d]\n", JArray_getPtr(arr, 0), JArray_getLength(arr, 0), JArray_size(arr));
 
-	JArray_pushBackString(arr, "JArray_pushBackString22");
-	printf("JArray_pushBackString: %s,len=%d\n", JArray_getPtr(arr, 1), JArray_getLength(arr, 1));
+        JArray_pushBackString(arr, "JArray_pushBackString22");
+        printf("JArray_pushBackString: %s,len=%d,array_size[%d]\n", JArray_getPtr(arr, 1), JArray_getLength(arr, 1), JArray_size(arr));
 
-	JArray_del(&arr);
+        int size = JArray_size(arr);
+        int ind = 0;
+        for (; ind < size; ++ind)
+        {
+            printf("array %s,===element index[%d],content[%s],len=[%d]\n", "testarray",ind, JArray_getPtr(arr, ind), JArray_getLength(arr, ind));
+        }
+
+        JArray_del(&arr);
 }
 
 
@@ -74,20 +81,20 @@ void  testStruct()
 		UniAttribute	* attr	= UniAttribute_new();
 		Test_TestInfo	*st	= Test_TestInfo_new();
 
-		/* »ù±¾ÀàĞÍµÄ¸³Öµ */
+		/* åŸºæœ¬ç±»å‹çš„èµ‹å€¼ */
 		st->ibegin	= 1111;
         st->ii = 54321;
 		st->iend	= 9999;
 		st->f		= 0.999f;
 		st->d		= 123.66f;
 
-		/* string ÀàĞÍµÄ³ÉÔ±¸³Öµ */
+		/* string ç±»å‹çš„æˆå‘˜èµ‹å€¼ */
 		JString_assign(st->s, "teststring", sizeof("teststring"));
 
-		/* vector<byte> ÀàĞÍµÄ³ÉÔ±¸³Öµ */
+		/* vector<byte> ç±»å‹çš„æˆå‘˜èµ‹å€¼ */
 		JString_assign(st->vb, "testvectrbyte", sizeof("testvectrbyte"));
 
-		/* vector<int> ÀàĞÍµÄ³ÉÔ±¸³Öµ,ÇëÊ¹ÓÃÁ÷Ä£Ê½¸³Öµ */
+		/* vector<int> ç±»å‹çš„æˆå‘˜èµ‹å€¼,è¯·ä½¿ç”¨æµæ¨¡å¼èµ‹å€¼ */
 		int i = 0;
 		for(i = 0; i < 10; i++)
 		{
@@ -108,7 +115,7 @@ void  testStruct()
 		UniAttribute_encode(attr, &buff, &len);
 
 		printf("UniAttribute_encode len: %d\n", len);
-		/* »ØÊÕ·ÖÅäµÄÄÚ´æ */
+		/* å›æ”¶åˆ†é…çš„å†…å­˜ */
 		TarsOutputStream_del(&os);
 		Test_TestInfo_del(&st);
 		UniAttribute_del(&attr);
@@ -137,7 +144,7 @@ void  testStruct()
 		printf("\n");
 
 
-		/* vector<int> ÀàĞÍµÄ¶ÁÈ¡,ÇëÊ¹ÓÃÁ÷Ä£Ê½¸³Öµ */
+		/* vector<int> ç±»å‹çš„è¯»å–,è¯·ä½¿ç”¨æµæ¨¡å¼èµ‹å€¼ */
 		TarsInputStream* is = TarsInputStream_new();
 
 		int i = 0;
@@ -197,7 +204,7 @@ void testtuppack()
 		UniPacket_encode(pack, &buff, &l);
 
 		printf("UniPacket_encode len: %d\n", l);
-		/* »ØÊÕ·ÖÅäµÄÄÚ´æ */
+		/* å›æ”¶åˆ†é…çš„å†…å­˜ */
 		Test_TestInfo_del(&st);
 		UniPacket_del(&pack);
 
@@ -273,7 +280,7 @@ void  testVector()
 		}
 
 		printf("\n");
-		/* ½á¹¹ÌåµÄarrayÖ±½ÓÓÃput½øĞĞ±àÂë */
+		/* ç»“æ„ä½“çš„arrayç›´æ¥ç”¨putè¿›è¡Œç¼–ç  */
 		TUP_putVector(attrv, "myvector", arr);
 
 		UniAttribute_encode(attrv, &buff, &len);
@@ -327,7 +334,7 @@ void  testMap()
 		TarsOutputStream *second = TarsOutputStream_new();
 		TarsInputStream	*ais	= TarsInputStream_new();
 
-		/* map<int,string>ÀàĞÍµÄ¸³Öµ,ÇëÊ¹ÓÃÁ÷Ä£Ê½¸³Öµ */
+		/* map<int,string>ç±»å‹çš„èµ‹å€¼,è¯·ä½¿ç”¨æµæ¨¡å¼èµ‹å€¼ */
 		for(i = 0; i < 10; i++)
 		{
 			TarsOutputStream_reset(first);
@@ -339,10 +346,10 @@ void  testMap()
 			JMapWrapper_put(m, TarsOutputStream_getBuffer(first), TarsOutputStream_getLength(first), TarsOutputStream_getBuffer(second), TarsOutputStream_getLength(second));
 		}
 
-		/* mapÀàĞÍµÄtup±àÂë */
+		/* mapç±»å‹çš„tupç¼–ç  */
 		int ret = TUP_putMap(attr, "mymap", m);
 		printf("ret:%d, map size:%d\n", ret, JMapWrapper_size(m));
-		/* ÔÚÄÚ²¿·ÖÅäÄÚ´æ£¬ĞèÒªÓÉÓÃ»§×Ô¼ºÊÍ·Å */
+		/* åœ¨å†…éƒ¨åˆ†é…å†…å­˜ï¼Œéœ€è¦ç”±ç”¨æˆ·è‡ªå·±é‡Šæ”¾ */
 		UniAttribute_encode(attr, &buff, &len);
 
 		TarsInputStream_del(&ais);
@@ -361,10 +368,10 @@ void  testMap()
 		TarsInputStream	* ais	= TarsInputStream_new();
 
 		UniAttribute_decode(attr, buff, len);
-		/* mapÀàĞÍµÄtup½âÂë */
+		/* mapç±»å‹çš„tupè§£ç  */
 		int ret = TUP_getMap(attr, "mymap", mRes);
 		printf("ret:%d, map size:%d\n", ret, JMapWrapper_size(mRes));
-		/* ¶Ámap<int, string> ÀàĞÍµÄ³ÉÔ± */
+		/* è¯»map<int, string> ç±»å‹çš„æˆå‘˜ */
 		for(i = 0; i < JMapWrapper_size(mRes); ++i)
 		{
 			Int32 ai;
@@ -403,7 +410,7 @@ void  testMapWithStruct()
 		TarsOutputStream *first	= TarsOutputStream_new();
 		TarsOutputStream *second = TarsOutputStream_new();
 
-		/* ÇëÊ¹ÓÃÁ÷Ä£Ê½¸³Öµ */
+		/* è¯·ä½¿ç”¨æµæ¨¡å¼èµ‹å€¼ */
 		for(i = 0; i < 3; i++)
 		{
 			TarsOutputStream_reset(first);
