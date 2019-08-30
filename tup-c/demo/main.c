@@ -198,8 +198,8 @@ void testtuppack()
 		pack->cPacketType	= 1;
 		pack->iRequestId = 23;
 
-		JString_assign(pack->sServantName, "myservant", sizeof("myservant"));
-		JString_assign(pack->sFuncName, "myfun", sizeof("myfun"));
+		JString_assign(pack->sServantName, "myservant", strlen("myservant"));
+		JString_assign(pack->sFuncName, "myfun", strlen("myfun"));
 
 		TUP_putStruct(pack, "mystruct", st);
 		uint32_t	l	= 0;
@@ -224,7 +224,7 @@ void testtuppack()
 	{
 		UniPacket *unpack = UniPacket_new();
 
-		UniPacket_decode(unpack, buffer, len);
+		UniPacket_decode(unpack, buffer + i, len);
 		i += UniPacket_size(unpack);
 		printf("UniPacket_decode len:%d,cur:%d\n", UniPacket_size(unpack),i);
 
