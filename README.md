@@ -1,3 +1,4 @@
+[Read in English](README.en.md)
 
 ## 关于协议、Tars文件以及翻译工具的说明
 
