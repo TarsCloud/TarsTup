@@ -1,3 +1,5 @@
+[点我看中文版本](README.md)
+
 ## Description of agreement, tars file, and translation tool
 
 **How `TARS encoding protocol`, `TUP grouping protocol`, and `TARS grouping protocol` correlate to one another:**
