@@ -278,7 +278,8 @@ class ServantProxy(object):
 
         if reqmsg.type == ReqMessage.SYNC_CALL:
             reqmsg.lock.acquire()
-            reqmsg.lock.wait(self.__timeout())
+            if not reqmsg.response:
+                reqmsg.lock.wait(self.__timeout())
             reqmsg.lock.release()
 
             if not reqmsg.response:
