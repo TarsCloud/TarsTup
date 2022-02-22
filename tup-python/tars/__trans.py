@@ -339,16 +339,19 @@ class TcpTransceiver(Transceiver):
         while True:
             buf = self.recv(8292)
             if not buf:
-                break
+                if buf is None:
+                    return None
+                else:
+                    break
             bufs.append(buf)
         self._recvBuf = ''.join(bufs)
         tarsLogger.info('tcp doResponse, fd: %d, recvbuf: %d',
                         self.getFd(), len(self._recvBuf))
 
         if not self._recvBuf:
-            return None
+            return []
 
-        rsplist = None
+        rsplist = []
         try:
             rsplist, bufsize = ReqMessage.unpackRspList(self._recvBuf)
             self._recvBuf = self._recvBuf[bufsize:]
@@ -429,6 +432,7 @@ class FDReactor(threading.Thread):
                 tarsLogger.debug('FDReactor::handle EPOLLERR or EPOLLHUP: %s',
                                  adapter.trans().getEndPointInfo())
                 adapter.trans().close()
+                adapter.popRequest()
                 return
 
             if adapter.shouldCloseTrans():
@@ -468,8 +472,10 @@ class FDReactor(threading.Thread):
             return
 
         rsplist = adapter.trans().doResponse()
-        if not rsplist:
+        if rsplist is None:
+            adapter.popRequest()
             return
+
         for rsp in rsplist:
             adapter.finished(rsp)
 

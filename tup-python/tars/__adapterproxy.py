@@ -257,7 +257,16 @@ class AdapterProxy:
 
     # 弹出请求报文
     def popRequest(self):
-        pass
+        while True:
+            reqmsg = self.__object.getTimeoutQueue().pop(-1)
+            if not reqmsg:
+                break
+
+            if reqmsg.type == ReqMessage.SYNC_CALL:
+                return reqmsg.servant._finished(reqmsg)
+            elif reqmsg.callback:
+                self.__asyncProc.put(reqmsg)
+                return True
 
     def shouldCloseTrans(self):
         '''

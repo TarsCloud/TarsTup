@@ -181,9 +181,12 @@ class TimeoutQueue:
         # self.__lock.acquire()
         lock = LockGuard(self.__lock)
 
-        if not uniqId:
-            if len(self.__queue):
-                uniqId = self.__queue.pop(0)
+        if uniqId < 0 and self.__data:
+            uniqId = self.__data.keys()[0]
+            if uniqId in self.__queue:
+                self.__queue.remove(uniqId)
+        if not uniqId and self.__queue:
+            uniqId = self.__queue.pop(0)
         if uniqId:
             if erase:
                 ret = self.__data.pop(uniqId, None)
