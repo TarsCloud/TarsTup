@@ -538,7 +538,7 @@ class FDReactor(threading.Thread):
         @return: None
         @rtype: None
         '''
-        tarsLogger.debug('FDReactor:registerAdapter')
+        tarsLogger.debug('FDReactor:unregisterAdapter')
         self.__ep.unregister(adapter.trans().getFd())
         self.__adapterTab.pop(adapter.trans().getFd(), None)
 

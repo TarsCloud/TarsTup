@@ -260,11 +260,11 @@ class AdapterProxy:
             if not reqmsg:
                 break
 
+            reqmsg.response = ''
             if reqmsg.type == ReqMessage.SYNC_CALL:
-                return reqmsg.servant._finished(reqmsg)
+                reqmsg.servant._finished(reqmsg)
             elif reqmsg.callback:
                 self.__asyncProc.put(reqmsg)
-                return True
 
     def shouldCloseTrans(self):
         '''
