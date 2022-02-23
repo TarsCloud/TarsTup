@@ -122,9 +122,8 @@ class AdapterProxy:
         reqmsg.request.iRequestId = self.__object.getTimeoutQueue().generateId()
         self.__object.getTimeoutQueue().push(reqmsg, reqmsg.request.iRequestId)
 
-        self.__reactor.notify(self)
+        return self.__reactor.notify(self)
 
-        return 0
 
     def finished(self, rsp):
         '''
@@ -238,8 +237,7 @@ class AdapterProxy:
             success = False
 
         if not success:
-            self.__reactor.unregisterAdapter(
-                self, socket.EPOLLIN | socket.EPOLLOUT)
+            self.__reactor.unregisterAdapter(self)
             self.__trans.close()
             self.__trans.setConnFailed()
             tarsLogger.error(

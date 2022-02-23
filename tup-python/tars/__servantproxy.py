@@ -267,7 +267,7 @@ class ServantProxy(object):
                       ' servant name : %s, function name : %s, adapter : %s' %
                       (reqmsg.request.sServantName,
                        reqmsg.request.sFuncName,
-                       reqmsg.adapter.getEndPointInfo()))
+                       reqmsg.adapter.trans().getEndPointInfo()))
             raise TarsException(errmsg)
         elif ret != 0:
             errmsg = ('ServantProxy::invoke unknown fail, ' +

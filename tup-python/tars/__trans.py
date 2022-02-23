@@ -431,6 +431,7 @@ class FDReactor(threading.Thread):
             if events & (select.EPOLLERR | select.EPOLLHUP):
                 tarsLogger.debug('FDReactor::handle EPOLLERR or EPOLLHUP: %s',
                                  adapter.trans().getEndPointInfo())
+                self.unregisterAdapter(adapter)
                 adapter.trans().close()
                 adapter.popRequest()
                 return
@@ -496,8 +497,8 @@ class FDReactor(threading.Thread):
     def notify(self, adapter):
         '''
         @brief: 更新adapter对应的fd的epoll状态
-        @return: None
-        @rtype: None
+        @return: 错误码: 0表示成功, -1表示连接失败
+        @rtype: int
         @note: FDReactor使用的epoll是EPOLLET模式，同一事件只通知一次
                希望某一事件再次通知需调用此函数
         '''
@@ -506,6 +507,9 @@ class FDReactor(threading.Thread):
         if fd != -1:
             self.__ep.modify(fd,
                              select.EPOLLET | select.EPOLLOUT | select.EPOLLIN)
+            return 0
+        else:
+            return -1
 
     def registerAdapter(self, adapter, events):
         '''
