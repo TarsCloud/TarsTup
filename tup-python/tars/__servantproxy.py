@@ -166,9 +166,9 @@ class ServantProxy(object):
         reqmsg.request = req
         reqmsg.begtime = time.time()
         # # test
-        reqmsg.isHash = True
-        reqmsg.isConHash = True
-        reqmsg.hashCode = 123456
+        # reqmsg.isHash = True
+        # reqmsg.isConHash = True
+        # reqmsg.hashCode = 123456
 
         rsp = None
         try:
