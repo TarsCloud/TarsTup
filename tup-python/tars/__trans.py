@@ -339,16 +339,19 @@ class TcpTransceiver(Transceiver):
         while True:
             buf = self.recv(8292)
             if not buf:
-                break
+                if buf is None:
+                    return None
+                else:
+                    break
             bufs.append(buf)
         self._recvBuf = ''.join(bufs)
         tarsLogger.info('tcp doResponse, fd: %d, recvbuf: %d',
                         self.getFd(), len(self._recvBuf))
 
         if not self._recvBuf:
-            return None
+            return []
 
-        rsplist = None
+        rsplist = []
         try:
             rsplist, bufsize = ReqMessage.unpackRspList(self._recvBuf)
             self._recvBuf = self._recvBuf[bufsize:]
@@ -428,7 +431,9 @@ class FDReactor(threading.Thread):
             if events & (select.EPOLLERR | select.EPOLLHUP):
                 tarsLogger.debug('FDReactor::handle EPOLLERR or EPOLLHUP: %s',
                                  adapter.trans().getEndPointInfo())
+                self.unregisterAdapter(adapter)
                 adapter.trans().close()
+                adapter.popRequest()
                 return
 
             if adapter.shouldCloseTrans():
@@ -468,8 +473,10 @@ class FDReactor(threading.Thread):
             return
 
         rsplist = adapter.trans().doResponse()
-        if not rsplist:
+        if rsplist is None:
+            adapter.popRequest()
             return
+
         for rsp in rsplist:
             adapter.finished(rsp)
 
@@ -490,8 +497,8 @@ class FDReactor(threading.Thread):
     def notify(self, adapter):
         '''
         @brief: 更新adapter对应的fd的epoll状态
-        @return: None
-        @rtype: None
+        @return: 错误码: 0表示成功, -1表示连接失败
+        @rtype: int
         @note: FDReactor使用的epoll是EPOLLET模式，同一事件只通知一次
                希望某一事件再次通知需调用此函数
         '''
@@ -500,6 +507,9 @@ class FDReactor(threading.Thread):
         if fd != -1:
             self.__ep.modify(fd,
                              select.EPOLLET | select.EPOLLOUT | select.EPOLLIN)
+            return 0
+        else:
+            return -1
 
     def registerAdapter(self, adapter, events):
         '''
@@ -528,7 +538,7 @@ class FDReactor(threading.Thread):
         @return: None
         @rtype: None
         '''
-        tarsLogger.debug('FDReactor:registerAdapter')
+        tarsLogger.debug('FDReactor:unregisterAdapter')
         self.__ep.unregister(adapter.trans().getFd())
         self.__adapterTab.pop(adapter.trans().getFd(), None)
 

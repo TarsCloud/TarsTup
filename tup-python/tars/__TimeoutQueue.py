@@ -181,9 +181,12 @@ class TimeoutQueue:
         # self.__lock.acquire()
         lock = LockGuard(self.__lock)
 
-        if not uniqId:
-            if len(self.__queue):
-                uniqId = self.__queue.pop(0)
+        if uniqId < 0 and self.__data:
+            uniqId = self.__data.keys()[0]
+            if uniqId in self.__queue:
+                self.__queue.remove(uniqId)
+        if not uniqId and self.__queue:
+            uniqId = self.__queue.pop(0)
         if uniqId:
             if erase:
                 ret = self.__data.pop(uniqId, None)
@@ -245,13 +248,18 @@ class TimeoutQueue:
         # 处理异常情况，防止死锁
         try:
             new_data = {}
+            new_queue = self.__queue[:]
+
             for uniqId, item in self.__data.iteritems():
                 if endtime - item[1] < self.__timeout:
                     new_data[uniqId] = item
                 else:
+                    if uniqId in new_queue:
+                        new_queue.remove(uniqId)
                     tarsLogger.debug(
                         'TimeoutQueue:timeout remove id : %d' % uniqId)
             self.__data = new_data
+            self.__queue = new_queue
         finally:
             # self.__lock.release()
             pass

@@ -18,7 +18,7 @@
 
 
 import sys
-from threading import Lock
+from threading import RLock
 import hashlib
 from xml.etree import cElementTree as ET
 from exception import TarsException
@@ -139,25 +139,28 @@ def configParse(filename):
 
 class NewLock(object):
     def __init__(self):
-        self.__count = 0
-        self.__lock = Lock()
-        self.__lockForCount = Lock()
+        # self.__count = 0
+        # self.__lock = Lock()
+        # self.__lockForCount = Lock()
+        self.__lock = RLock()        
         pass
 
     def newAcquire(self):
-        self.__lockForCount.acquire()
-        self.__count += 1
-        if self.__count == 1:
-            self.__lock.acquire()
-        self.__lockForCount.release()
+        # self.__lockForCount.acquire()
+        # self.__count += 1
+        # if self.__count == 1:
+        #     self.__lock.acquire()
+        # self.__lockForCount.release()
+        self.__lock.acquire()
         pass
 
     def newRelease(self):
-        self.__lockForCount.acquire()
-        self.__count -= 1
-        if self.__count == 0:
-            self.__lock.release()
-        self.__lockForCount.release()
+        # self.__lockForCount.acquire()
+        # self.__count -= 1
+        # if self.__count == 0:
+        #     self.__lock.release()
+        # self.__lockForCount.release()
+        self.__lock.release()
 
 
 class LockGuard(object):

@@ -166,9 +166,9 @@ class ServantProxy(object):
         reqmsg.request = req
         reqmsg.begtime = time.time()
         # # test
-        reqmsg.isHash = True
-        reqmsg.isConHash = True
-        reqmsg.hashCode = 123456
+        # reqmsg.isHash = True
+        # reqmsg.isConHash = True
+        # reqmsg.hashCode = 123456
 
         rsp = None
         try:
@@ -267,7 +267,7 @@ class ServantProxy(object):
                       ' servant name : %s, function name : %s, adapter : %s' %
                       (reqmsg.request.sServantName,
                        reqmsg.request.sFuncName,
-                       reqmsg.adapter.getEndPointInfo()))
+                       reqmsg.adapter.trans().getEndPointInfo()))
             raise TarsException(errmsg)
         elif ret != 0:
             errmsg = ('ServantProxy::invoke unknown fail, ' +
@@ -278,7 +278,7 @@ class ServantProxy(object):
 
         if reqmsg.type == ReqMessage.SYNC_CALL:
             reqmsg.lock.acquire()
-            if not reqmsg.response:
+            if reqmsg.response is None:
                 reqmsg.lock.wait(self.__timeout())
             reqmsg.lock.release()
 
